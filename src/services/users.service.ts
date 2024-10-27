@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { hash } from 'bcrypt';
 import { Service } from 'typedi';
 import { CreateUserDto, InvitationUserDto } from '@dtos/users.dto';
 import { HttpException } from '@/exceptions/httpException';
@@ -58,18 +57,55 @@ export class UserService {
         password: hashedPassword,
         pseudo: `user${userData.idInvitation}`,
         idInvitation: userData.idInvitation,
+        role: 'user',
       },
     });
 
     return newUser;
   }
 
+  public async connectionUser(userData: { identifiant: string; password: string }): Promise<User> {
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (regexEmail.test(userData.identifiant)) {
+      const findEmail: User = await this.user.findUnique({ where: { email: userData.identifiant } });
+      if (!findEmail) throw new HttpException(409, `Identifiants incorrects !`);
+
+      const isPasswordMatching: boolean = await bcrypt.compare(userData.password, findEmail.password);
+      if (!isPasswordMatching) throw new HttpException(409, `Identifiants incorrects !`);
+
+      // const updateUser = await this.user.update({
+      //   where: {
+      //     email: findEmail.email,
+      //   },
+      //   data: {
+      //     last_connection: localDate(),
+      //   },
+      // });
+      return findEmail;
+    } else {
+      const findPseudo: User = await this.user.findUnique({ where: { pseudo: userData.identifiant } });
+      if (!findPseudo) throw new HttpException(409, `Identifiants incorrects !`);
+
+      const isPasswordMatching: boolean = await bcrypt.compare(userData.password, findPseudo.password);
+      if (!isPasswordMatching) throw new HttpException(409, `Identifiants incorrects !`);
+
+      // const updateUser = await this.user.update({
+      //   where: {
+      //     pseudo: findPseudo.pseudo,
+      //   },
+      //   data: {
+      //     last_connection: localDate(),
+      //   },
+      // });
+      return findPseudo;
+    }
+  }
+
   public async updateUser(userId: string, userData: CreateUserDto): Promise<User> {
     const findUser: User = await this.user.findUnique({ where: { id: userId } });
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 
-    const hashedPassword = await hash(userData.password, 10);
-    const updateUserData = await this.user.update({ where: { id: userId }, data: { ...userData, password: hashedPassword } });
+    const updateUserData = await this.user.update({ where: { id: userId }, data: { ...userData } });
     return updateUserData;
   }
 

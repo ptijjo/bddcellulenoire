@@ -1,3 +1,4 @@
+import { ROLE } from '@prisma/client';
 import { IsEmail, IsString, IsNotEmpty, MinLength, MaxLength, IsDate, Validate, IsIn, IsOptional } from 'class-validator';
 const cuid = require('cuid');
 
@@ -22,17 +23,18 @@ export class CreateUserDto {
   @IsEmail()
   public email: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   // @MinLength(9)
   // @MaxLength(32)
-  public password: string;
+  public password?: string;
 
   @IsOptional()
   @IsString()
   @IsIn(['user', 'modo', 'admin'])
   @IsNotEmpty()
-  public role?: string;
+  public role?: ROLE;
 
   @IsOptional()
   @IsString()

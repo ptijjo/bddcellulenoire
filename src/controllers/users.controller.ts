@@ -3,10 +3,9 @@ import { Container } from 'typedi';
 import { User } from '@interfaces/users.interface';
 import { UserService } from '@services/users.service';
 import { InvitationUserDto } from '@/dtos/users.dto';
-import jwt from 'jsonwebtoken';
-import { SECRET_KEY_INVITATION } from '@/config';
 import { TokenService } from '@/services/token.service';
-
+import jwt from 'jsonwebtoken';
+import { EXPIRED_TOKEN, SECRET_KEY } from '@/config';
 export class UserController {
   public user = Container.get(UserService);
   public token = Container.get(TokenService);
@@ -37,7 +36,7 @@ export class UserController {
       const data: InvitationUserDto = req.body;
       const inviteUser = await this.user.invitation(data);
 
-      res.status(201).json({ data: inviteUser, message: 'invitation envoyée !' });
+      res.status(200).json({ data: inviteUser, message: 'invitation envoyée !' });
     } catch (error) {
       next(error);
     }
@@ -66,6 +65,31 @@ export class UserController {
       const updateUserData: User = await this.user.updateUser(userId, userData);
 
       res.status(200).json({ data: updateUserData, message: 'updated' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public connectUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userData: { identifiant: string; password: string } = req.body;
+      const connectUserData: User = await this.user.connectionUser(userData);
+
+      //Creation du token d'authentification
+
+      const token = jwt.sign(
+        {
+          userId: connectUserData.id,
+          userEmail: connectUserData.email,
+          userRole: connectUserData.role,
+          userPseudo: connectUserData.pseudo,
+          userPhoto: connectUserData.avatar,
+        },
+        SECRET_KEY as string,
+        { expiresIn: EXPIRED_TOKEN as string },
+      );
+
+      res.status(200).json({ data: connectUserData, token: token, message: 'connected' });
     } catch (error) {
       next(error);
     }

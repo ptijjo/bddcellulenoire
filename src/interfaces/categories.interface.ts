@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
-export interface Categrory {
+import { CATEGORY } from '@prisma/client';
+
+export interface Category {
   id?: string;
-  title: string;
-  bookId: string;
+  type: CATEGORY;
 }

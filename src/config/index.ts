@@ -6,6 +6,7 @@ export const {
   NODE_ENV,
   PORT,
   SECRET_KEY,
+  EXPIRED_TOKEN,
   LOG_FORMAT,
   LOG_DIR,
   ORIGIN,

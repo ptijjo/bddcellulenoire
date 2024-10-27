@@ -2,46 +2,48 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
+enum ROLE {
+  user
+  modo
+  admin
+}
+
+enum CATEGORY {
+  histoire
+  religion
+  philosophie
+  spiritualite
+}
+
 model User {
-  id           String   @id @default(cuid())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   email        String   @unique
   password     String
   pseudo       String   @unique
   avatar       String   @default("https://vibz.s3.eu-central-1.amazonaws.com/logo/photoProfil.png")
-  role         String   @default("user")
+  role         ROLE     @default(user)
   idInvitation String   @unique
   createdAt    DateTime @default(now())
 }
 
 model Book {
-  id         String           @id @default(cuid())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   title      String
-  uploadedAt DateTime         @default(now())
-  category   BookToCategory[]
+  uploadedAt DateTime @default(now())
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String   @db.ObjectId // Référence à la catégorie
 }
 
 model Category {
-  id     String           @id @default(cuid())
-  title  String
-  bookId String
-  books  BookToCategory[]
-}
-
-// Tableau de liaison pour la relation many-to-many entre Book et Category
-model BookToCategory {
-  bookId     String
-  categoryId String
-
-  book     Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@id([bookId, categoryId]) // Clé composite pour garantir l'unicité
+  id    String   @id @default(auto()) @map("_id") @db.ObjectId
+  type  CATEGORY @unique
+  books Book[] // Relation avec les livres
 }
