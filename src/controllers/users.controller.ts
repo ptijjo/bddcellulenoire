@@ -105,4 +105,18 @@ export class UserController {
       next(error);
     }
   };
+
+  public updateUserAvatar = async (req, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = String(req.params.id);
+      const authUser = req.auth.userId;
+      const userData: User = req.body;
+      userData.avatar = `${req.protocol}://${req.get('host')}/public/avatar/${req.file.filename}`.split(' ').join('');
+      const updateUserData: User = await this.user.updateUserAvatar(userId, userData, authUser);
+
+      res.status(200).json({ data: updateUserData, message: 'updated' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

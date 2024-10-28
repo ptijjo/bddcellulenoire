@@ -16,8 +16,8 @@ export class CategoryRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}`, this.category.getCatgeories);
-    this.router.get(`${this.path}/:id`, this.category.getCategoryId);
-    this.router.post(`${this.path}/:id`, modo, ValidationMiddleware(CreateCategoryDto), this.category.createCategory);
+    this.router.get(`${this.path}`, modo,this.category.getCatgeories);
+    this.router.get(`${this.path}/:id`, modo,this.category.getCategoryId);
+    this.router.post(`${this.path}`, modo,ValidationMiddleware(CreateCategoryDto), this.category.createCategory);
   }
 }

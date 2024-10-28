@@ -8,6 +8,7 @@ const cuid = require('cuid');
 import jwt from 'jsonwebtoken';
 import { EXPIRED_TOKEN_INVITATION, SECRET_KEY_INVITATION } from '@/config';
 import bcrypt from 'bcrypt';
+import fs from 'fs';
 
 @Service()
 export class UserService {
@@ -115,5 +116,23 @@ export class UserService {
 
     const deleteUserData = await this.user.delete({ where: { id: userId } });
     return deleteUserData;
+  }
+
+  public async updateUserAvatar(userId: string, userData: CreateUserDto, authUser: string): Promise<User> {
+    const findUser: User = await this.user.findUnique({ where: { id: userId } });
+    if (!findUser) throw new HttpException(409, "User doesn't exist");
+
+    if (userId !== authUser) throw new HttpException(409, 'Opération non authorisé !');
+
+    const file = findUser.avatar.split('/public/avatar')[1];
+    if (file) {
+      fs.unlink(`/public/avatar/${file}`, error => {
+        if (error) console.log(error);
+        else console.log(`${file} is deleted !`);
+      });
+    }
+
+    const updateUserData = await this.user.update({ where: { id: authUser }, data: { ...userData } });
+    return updateUserData;
   }
 }

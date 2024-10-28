@@ -5,6 +5,7 @@ import { Routes } from '@interfaces/routes.interface';
 import { ValidationMiddleware } from '@middlewares/validation.middleware';
 import { modo } from '@/middlewares/modo';
 import { auth } from '@/middlewares/auth';
+import uploadAvatar from '@/middlewares/avatar.middleware';
 
 export class UserRoute implements Routes {
   public path = '/users';
@@ -22,6 +23,7 @@ export class UserRoute implements Routes {
     this.router.post(`${this.path}`, modo, ValidationMiddleware(InvitationUserDto), this.user.inviteUser);
     this.router.post(`${this.path}_connection`, this.user.connectUser);
     this.router.put(`${this.path}/:id`, auth, ValidationMiddleware(CreateUserDto, true), this.user.updateUser);
+    this.router.put(`${this.path}_updateAvatar/:id`, auth, uploadAvatar, ValidationMiddleware(CreateUserDto, true), this.user.updateUser);
     this.router.delete(`${this.path}/:id`, modo, this.user.deleteUser);
   }
 }
