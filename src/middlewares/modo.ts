@@ -16,20 +16,16 @@ export const modo = (req: any, res: Response, next: NextFunction) => {
       userId: string;
       userEmail: string;
       userRole: string;
-      userFirstName: string;
-      userLastName: string;
-      userPhoto: string;
-      userLastConnection: string;
+      userPseudo: string;
+      userAvatar: string;
     };
-    const { userId, userEmail, userRole, userFirstName, userLastName, userPhoto, userLastConnection } = decodedToken;
+    const { userId, userEmail, userRole, userAvatar, userPseudo } = decodedToken;
     req.auth = {
       userId: userId,
+      userPseudo: userPseudo,
       userEmail: userEmail,
-      userFistName: userFirstName,
-      userLastName: userLastName,
-      userPhoto: userPhoto,
+      userAvatar: userAvatar,
       userRole: userRole,
-      userLastConnection: userLastConnection,
     };
     if (userRole === 'user') return res.status(403).json({ error: 'Il faut être admin ou modo pour continuer' });
 

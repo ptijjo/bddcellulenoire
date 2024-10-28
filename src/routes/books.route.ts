@@ -8,7 +8,7 @@ import { modo } from '@/middlewares/modo';
 import { auth } from '@/middlewares/auth';
 import uploadBook from '@/middlewares/uploadBooks.middleware';
 
-export class UserRoute implements Routes {
+export class BookRoute implements Routes {
   public path = '/books';
   public router = Router();
   public book = new BookController();
@@ -18,9 +18,9 @@ export class UserRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}`, auth, this.book.getBooks);
+    this.router.get(`${this.path}`,auth, this.book.getBooks);
     this.router.get(`${this.path}/:id`, auth, this.book.getBookById);
-    this.router.post(`${this.path}`, modo, uploadBook,ValidationMiddleware(AddBookDto),modo, this.book.addBook);
+    this.router.post(`${this.path}`, uploadBook,ValidationMiddleware(AddBookDto), this.book.addBook);
     this.router.put(`${this.path}/:id`, modo, ValidationMiddleware(AddBookDto, true), this.book.updateBook);
     this.router.delete(`${this.path}/:id`, modo, this.book.deleteBook);
   }

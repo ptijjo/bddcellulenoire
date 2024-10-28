@@ -17,21 +17,15 @@ export const auth = (req: any, res: Response, next: NextFunction) => {
       userEmail: string;
       userRole: string;
       userPseudo: string;
-      userFirstName: string;
-      userLastName: string;
-      userPhoto: string;
-      userLastConnection: string;
+      userAvatar: string;
     };
-    const { userId, userEmail, userRole, userFirstName, userLastName, userPhoto, userLastConnection, userPseudo } = decodedToken;
+    const { userId, userEmail, userRole, userAvatar, userPseudo } = decodedToken;
     req.auth = {
       userId: userId,
       userPseudo: userPseudo,
       userEmail: userEmail,
-      userFistName: userFirstName,
-      userLastName: userLastName,
-      userPhoto: userPhoto,
+      userAvatar: userAvatar,
       userRole: userRole,
-      userLastConnection: userLastConnection,
     };
     next();
   } catch (error) {

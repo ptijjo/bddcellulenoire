@@ -83,7 +83,7 @@ export class UserController {
           userEmail: connectUserData.email,
           userRole: connectUserData.role,
           userPseudo: connectUserData.pseudo,
-          userPhoto: connectUserData.avatar,
+          userAvatar: connectUserData.avatar,
         },
         SECRET_KEY as string,
         { expiresIn: EXPIRED_TOKEN as string },
@@ -115,6 +115,20 @@ export class UserController {
       const updateUserData: User = await this.user.updateUserAvatar(userId, userData, authUser);
 
       res.status(200).json({ data: updateUserData, message: 'updated' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public decodageToken = async (req: any, res: Response, next: NextFunction) => {
+    try {
+      const id = req.auth.userId;
+      const pseudo = req.auth.userPseudo;
+      const avatar = req.auth.userAvatar;
+      const email = req.auth.userEmail;
+      const role = req.auth.userRole;
+
+      res.status(200).json({ pseudo, avatar, id, role, email });
     } catch (error) {
       next(error);
     }
