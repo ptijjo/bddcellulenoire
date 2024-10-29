@@ -34,6 +34,6 @@
       "@mails/*": ["mails/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.json", ".env"],
+  "include": ["src/**/*.ts", "src/**/*.json", ".env", "src/middlewares/uploadBooks.middleware.ts"],
   "exclude": ["node_modules", "src/http", "src/logs"]
 }

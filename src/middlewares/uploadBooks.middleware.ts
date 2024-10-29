@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
-import { Request} from 'express';
+import {Request} from "express";
 import { join } from 'path';
-const multer = require('multer');
+import multer from 'multer';
 
 
 
@@ -11,14 +11,15 @@ const MIME_TYPES = {
 
 // Configuration de multer avec un filtre pour n'accepter que les fichiers PDF
 const storage = multer.diskStorage({
-    destination: (req: Request, cb) => {
+    destination: (req:Request,file, cb) => {
          // on indique ou on va enregistrer les fichiers
-    const uploadPath = join(__dirname, '..',"..", 'public', 'books');
+    const uploadPath = join(__dirname, '..', "..", 'public', 'books');
+    console.log("Destination called with path:", uploadPath); // Debugging
     cb(null, uploadPath);
     },
 
     // Spécifie le nom du fichier
-  filename: (req:Request, file: { originalname: string; mimetype: string | number; }, cb: (arg0: null, arg1: string) => void) => {
+  filename: (req:Request, file, cb) => {
     const nom = file.originalname.split(' ').join('_');
     const name = nom.split('.').join('_');
       const extension = MIME_TYPES[file.mimetype];
@@ -27,7 +28,7 @@ const storage = multer.diskStorage({
 });
 
 // Fonction de filtre pour accepter uniquement les fichiers PDF
-const fileFilter = (req:Request, file: { mimetype: string; }, cb: (arg0: Error, arg1: boolean) => void) => {
+const fileFilter = (req:Request, file, cb) => {
   if (file.mimetype === 'application/pdf') {
     cb(null, true); // Accepter le fichier
   } else {
@@ -36,6 +37,6 @@ const fileFilter = (req:Request, file: { mimetype: string; }, cb: (arg0: Error, 
 };
 
 // Appliquer le filtre avec multer
-const uploadBook = multer({ storage: storage, fileFilter: fileFilter }).single("book");
+const uploadBook = multer({ storage: storage, fileFilter: fileFilter }).single("url");
 
 export default uploadBook;

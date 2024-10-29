@@ -4,6 +4,7 @@ import { Container } from 'typedi';
 import { Book } from '@interfaces/books.interface';
 import { BookService } from '@services/books.service';
 import { CATEGORY } from '@prisma/client';
+import { AddBookDto } from '@/dtos/books.dto';
 
 export class BookController {
   public book = Container.get(BookService);
@@ -33,11 +34,12 @@ export class BookController {
  
   public addBook = async (req: any , res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userData: Book = req.body;
-        userData.url = `${req.protocol}://${req.get('host')}/public/books/${req.file.filename}`.split(' ').join('');
-        const category: CATEGORY = req.body.category;
+      const bookData: AddBookDto = req.body;
+        const url = `${req.protocol}://${req.get('host')}/public/books/${req.file.filename}`.split(' ').join('');
+        const category: CATEGORY = req.body.categoryName;
 
-      const addBookData: Book = await this.book.addBook(userData,category);
+        
+      const addBookData: Book = await this.book.addBook(bookData,category,url);
 
       res.status(201).json({ data: addBookData, message: 'created' });
     } catch (error) {

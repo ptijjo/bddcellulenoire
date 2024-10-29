@@ -22,23 +22,27 @@ export class BookService {
     return findBook;
   }
 
-  public async addBook(bookData: AddBookDto, categoryName: CATEGORY): Promise<Book> {
+  public async addBook(bookData: AddBookDto, categoryName: string , url: string): Promise<Book> {
     const findCategory = await this.category.findUnique({
       where: {
-        type: categoryName,
+        type: categoryName as CATEGORY,
       },
     });
 
     if (!findCategory) throw new HttpException(409, "category doesn't exist");
 
+    console.log(findCategory)
+
     const newbook: Book = await this.book.create({
       data: {
-        ...bookData,
+        title:bookData.title,
+        url: url,
         categoryId:findCategory.id
       },
     });
 
     return newbook;
+    
   }
 
   public async updatebook(bookId: string, bookData: AddBookDto): Promise<Book> {
